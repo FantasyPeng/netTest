@@ -1,0 +1,40 @@
+body {
+    color: #7d6c52;
+    background-color: #c5c5e0;
+    font-family: "Helvetica", "Arial", sans-serif;
+}
+
+table {
+    border: 1px solid #699;
+    margin: auto;
+}
+
+th {
+    background-color: #828698;
+    border: 1px dotted #699;
+    font-style: italic;
+    font-weight: normal;
+    text-align: left;
+}
+
+th,
+td {
+    padding: .5em;
+    width: 10em;
+
+}
+td {
+    color: #2669bf;
+}
+.vertical-center {
+    margin-left: calc((100% - 544px) / 2);
+}
+
+#select {
+    width: 70px;
+    margin-right: 30px;
+}
+#slices {
+    width: 50px;
+    margin-right: 30px;
+}
