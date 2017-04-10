@@ -23,7 +23,7 @@
 - scripts/layout.js为WebSocket的客户端
   - 获取网页端的信息，通过WebSocket发送给client.js
   - 接收来自后端的文件列表信息，将其显示到前端
-  - 接收文件数据，并使用Bolb创建文件并下载
+  - 接收文件数据，并使用blob创建文件并下载
 
 ## 运行流程
 - ```node server.js```
