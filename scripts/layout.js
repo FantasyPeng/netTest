@@ -6,18 +6,21 @@ function insertAfter(newElement, targetElement) {
         parent.insertBefore(newElement, targetElement.nextSibling);
     }
 }
+
 function highlightRows() {
     // body... 
     if (!document.getElementsByTagName) return false;
     var rows = document.getElementsByTagName("tr");
     for (var i = 0; i < rows.length; i++) {
         rows[i].onmouseover = function() {
-            this.style.fontWeight = "bold";     };
+            this.style.fontWeight = "bold";
+        };
         rows[i].onmouseout = function() {
             this.style.fontWeight = "normal";
         };
     }
 }
+
 function stripeTable() {
     if (!document.getElementsByTagName) return false;
     var tables = document.getElementsByTagName("table");
@@ -35,36 +38,40 @@ function stripeTable() {
         }
     }
 }
-function changeSlices () {
+
+function changeSlices() {
     var select = document.getElementById("select");
     var newSlices = dataAl[select.selectedIndex].size;
-    var mySelect2 = document.getElementById("slices"); 
-    mySelect2.options.length=0;
-    for(var i = 1; i <= newSlices; i++){
-         mySelect2.options.add(new Option(i));
+    var mySelect2 = document.getElementById("slices");
+    mySelect2.options.length = 0;
+    for (var i = 1; i <= newSlices; i++) {
+        mySelect2.options.add(new Option(i));
     }
 }
-function changeAccept () {
+
+function changeAccept() {
     var fileIndex = $("#select").get(0).selectedIndex;
-    var acceptSlices =  $("#slices").val();
+    var acceptSlices = $("#slices").val();
     var mytable = document.getElementsByTagName("table");
     mytable[0].rows[fileIndex + 1].cells[2].innerText = acceptSlices;
 }
-function createForm(data){
-    
+
+function createForm(data) {
+
     var mySelect = document.getElementById("select");
     var mySelect2 = document.getElementById("slices");
-    for(var i = 0; i < data.length; i++){
-         mySelect.options.add(new Option(data[i].name));
+    for (var i = 0; i < data.length; i++) {
+        mySelect.options.add(new Option(data[i].name));
     }
     var slices = data[0].size;
-    for(var i = 1; i <= slices; i++){
-         mySelect2.options.add(new Option(i));
+    for (var i = 1; i <= slices; i++) {
+        mySelect2.options.add(new Option(i));
     }
 }
+
 function createTable(data) {
     var table = document.createElement('table');
-    table.setAttribute("class","table");
+    table.setAttribute("class", "table");
     var tbody = document.createElement('tbody');
     var tr1 = document.createElement('tr');
     var th0 = document.createElement('th');
@@ -84,9 +91,9 @@ function createTable(data) {
         var tr = document.createElement('tr');
         for (var j = 0; j < 3; j++) {
             var td = document.createElement('td');
-            if (j == 0){
-               var inner = document.createTextNode(data[i].name);
-            } else if(j == 1){
+            if (j == 0) {
+                var inner = document.createTextNode(data[i].name);
+            } else if (j == 1) {
                 var inner = document.createTextNode(data[i].size);
             } else {
                 var inner = document.createTextNode("0");
@@ -120,7 +127,7 @@ function sendMessage() {
 ws.onmessage = function(e) {
     console.log("in onmessage:", e.data);
     var data = JSON.parse(e.data);
-    
+
     //  若返回数据为文件列表
     if (data.length) {
         dataAl = data;
@@ -129,9 +136,19 @@ ws.onmessage = function(e) {
     } else { //  若返回数据为文件内容
         var fileName = data.filename;
         var fileContent = data.filestring;
+        // var fileContent1 = new ArrayBuffer(fileContent, 'base64');
+        // var str = fileContent1.toString();
+        //处理异常,将ascii码小于0的转换为大于0
+        var binary_string = window.atob(fileContent);
+        var len = binary_string.length;
         
-        createAndDownloadFile (fileName,fileContent);
-        changeAccept(); 
+        var bytes = new Uint8Array(len);
+        for (var i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        //console.log("str:" + str);
+        createAndDownloadFile(fileName, bytes.buffer);
+        changeAccept();
         alert("Data Transfer Complete ");
     }
 };

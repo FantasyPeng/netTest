@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WebSocket Echo Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/frmat.css">
+    <script src="node_modules/jQuery/tmp/jquery.js"></script>
+    <script src="scripts/layout.js"></script>
+</head>
+
+<body>
+    <div class="vertical-center">
+        <div class="container">
+            <p>Please choose filename and slices:</p>
+            <form role="form" id="chat_form" onsubmit=" return false;">
+                <select id="select" onchange="changeSlices();">
+                </select>
+                <select id="slices">
+                </select>
+                <button type="button" id="send" class="btn btn-primary" onclick="sendMessage();">
+                    Send!
+                </button>
+            </form>
+            <p>The filename and all slices:</p>
+        </div>
+    </div>
+</body>
+
+</html>
