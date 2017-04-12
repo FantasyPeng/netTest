@@ -31,10 +31,21 @@ td {
 }
 
 #select {
-    width: 70px;
+   
     margin-right: 30px;
 }
 #slices {
-    width: 50px;
+    
     margin-right: 30px;
+}
+#favDialog,
+#favDialog1{
+        border: 2px solid #4d61c3;
+    /* border-top: yellow; */
+    border-top: 4px solid #2f4773;
+    background-color: #e4d5d5;
+    text-align: center;
+}
+#cancel{
+
 }

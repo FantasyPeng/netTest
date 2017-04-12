@@ -118,6 +118,8 @@ ws.onopen = function(e) {
 };
 
 function sendMessage() {
+    var favDialog = document.getElementById('favDialog');
+    favDialog.showModal();
     console.log("select:" + $("#select").val());
     console.log("slices:" + $("#slices").val());
     var message = $("#select").val() + " " + $("#slices").val();
@@ -135,24 +137,41 @@ ws.onmessage = function(e) {
         // appendLog(data.type, data.nickname, data.message);            
     } else { //  若返回数据为文件内容
         var fileName = data.filename;
-        var fileContent = data.filestring;
+        var fileContent = data.filestring.data;
+        console.log(fileContent);
+        var ab = toArrayBuffer(fileContent);
+
         // var fileContent1 = new ArrayBuffer(fileContent, 'base64');
         // var str = fileContent1.toString();
         //处理异常,将ascii码小于0的转换为大于0
-        var binary_string = window.atob(fileContent);
-        var len = binary_string.length;
-        
-        var bytes = new Uint8Array(len);
-        for (var i = 0; i < len; i++) {
-            bytes[i] = binary_string.charCodeAt(i);
-        }
+        // var binary_string = window.atob(fileContent);
+        // var len = binary_string.length;
+
+        // var bytes = new Uint8Array(len);
+        // for (var i = 0; i < len; i++) {
+        //     bytes[i] = binary_string.charCodeAt(i);
+        // }
         //console.log("str:" + str);
-        createAndDownloadFile(fileName, bytes.buffer);
+        var favDialog = document.getElementById('favDialog');
+        favDialog.close();
+
+        createAndDownloadFile(fileName, ab);
         changeAccept();
-        alert("Data Transfer Complete ");
     }
 };
 
+function toArrayBuffer(buffer) {
+
+    // 创建一个缓存对象，长度等于buffer.length
+    var ab = new ArrayBuffer(buffer.length);
+    // 创建一个Uint8类型的数组对象。
+    var view = new Uint8Array(ab);
+
+    for (var i = 0; i < buffer.length; ++i) {
+        view[i] = buffer[i]; // 把buffer的数据拷贝到ab缓存内。
+    }
+    return ab; // 返回新的 ArrayBuffer对象。
+}
 //实现下载文件
 function createAndDownloadFile(fileName, content) {
     var aTag = document.createElement('a');
@@ -161,4 +180,10 @@ function createAndDownloadFile(fileName, content) {
     aTag.href = URL.createObjectURL(blob);
     aTag.click();
     URL.revokeObjectURL(blob);
+    var favDialog = document.getElementById('favDialog1');
+    favDialog.showModal();
+}
+function closeThe () {
+     var favDialog1 = document.getElementById('favDialog1');
+     favDialog1.close();
 }

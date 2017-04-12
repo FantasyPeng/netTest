@@ -39,6 +39,7 @@
          sock.remoteAddress + ':' + sock.remotePort);
      // 为这个socket实例添加一个"data"事件处理函数
      sock.on('data', function(data) {
+         var objDt = [];
          console.log(data.toString());
          var dataString = data.toString();
          if (dataString !== 'getlist') {
@@ -48,52 +49,63 @@
              fs.readFile(__dirname + '/database/' + dataArray[0], function(err, data) {
                  if (err) throw err;
                  var pages = parseInt(data.length / readLength) + 1;
-                 var dataStringBase = data.toString('base64');
-                 console.log(dataStringBase, dataStringBase.length);
+                 // var dataStringBase = data.toString('base64');
+                 console.log(data, typeof data);
 
-                 //!!!!!!!!!!!!!!!!!!!!!!!!
-                 var newReadLength = parseInt(dataStringBase.length / pages) + 1;
-
+                 //var newReadLength = parseInt(dataStringBase.length / pages) + 1;
                  var bufferArray = [];
                  for (var ic = 0; ic < pages; ic++) {
                      var testSum = 0;
                      var buffer = Buffer.alloc(readLength);
+                     // var message = Buffer.from("161430131pjf" + ic * readLength);
+                     var message = "161430131pjf" + ic * readLength;
+                     var objBuffer = {};
                      if (ic != pages - 1) {
                          data.copy(buffer, 0, ic * readLength, ic * readLength + readLength);
-                         var strSlices = dataStringBase.substring(ic * newReadLength, ic * newReadLength + newReadLength);
+                         //var strSlices = dataStringBase.substring(ic * newReadLength, ic * newReadLength + newReadLength);
                          for (var ib = 0; ib < readLength; ib++) {
                              testSum += buffer[ib];
                          }
                          testSum = testSum % 256;
-                         console.log(strSlices, typeof strSlices);
-                         bufferArray.push(strSlices + "@" + testSum);
+                         message += "testSum";
+                         objBuffer.contentData = buffer;
+                         objBuffer.message = message;
+                         //console.log(strSlices, typeof strSlices);
+                         bufferArray.push(objBuffer);
                      } else {
                          var lastData0 = data.length - readLength * ic;
-                         var lastData = dataStringBase.length - newReadLength * ic;
+                         //var lastData = dataStringBase.length - newReadLength * ic;
                          data.copy(buffer, 0, data.length - lastData0, data.length);
-                         var strSlices1 = dataStringBase.substring(dataStringBase.length - lastData);
+                         //var strSlices1 = dataStringBase.substring(dataStringBase.length - lastData);
 
                          for (var ia = 0; ia < lastData0; ia++) {
                              testSum += buffer[ia];
                          }
-                         console.log(strSlices1, typeof strSlices1);
+                         message += "testSum";
+                         objBuffer.contentData = buffer.slice(0, lastData0);
+                         objBuffer.message = message;
+                         //console.log(strSlices1, typeof strSlices1);
                          testSum = testSum % 256;
-                         bufferArray.push(strSlices1 + "@" + testSum);
+                         bufferArray.push(objBuffer);
                      }
                  }
                  for (var i = 0; i < count; i++) {
-                     sock.write(dataArray[0].toString() + "@" + "161430131pjf" + i * readLength + "@" + bufferArray[i] + "\f");
+                     var bufferJson = JSON.stringify(bufferArray[i]);
+                     console.log("bufferJson:" + bufferJson);
+                    // objDt.push(bufferArray[i])
+                     sock.write(bufferJson + "\f");
                  }
-                 sock.write("$$$end");
+                 sock.write("$end");
              });
          } else {
              // 返回文件列表数据
              var fileName = geFileList(__dirname + '/database/');
-             var json = JSON.stringify(fileName);
+             var content = {};
+             content.filename = fileName;
+             content.value = "list";
+             var json = JSON.stringify(content);
              console.log("json:" + json, typeof json);
-             //  console.log(fileNameString);
-             // sock.write('list' + '$' + fileNameString);
-             sock.write('list' + '$$$' + json);
+             sock.write("list" + "\f" + json + "$end");
          }
      });
      // 为这个socket实例添加一个"close"事件处理函数
